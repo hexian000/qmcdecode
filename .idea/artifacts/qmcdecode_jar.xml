@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="qmcdecode:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/qmcdecode_jar</output-path>
+    <root id="archive" name="qmcdecode.jar">
+      <element id="module-output" name="qmcdecode" />
+    </root>
+  </artifact>
+</component>
