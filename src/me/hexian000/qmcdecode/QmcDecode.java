@@ -1,7 +1,11 @@
 package me.hexian000.qmcdecode;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -11,6 +15,7 @@ public class QmcDecode extends JFrame {
     private JPanel contentPane;
     private JList<String> taskList;
     private JLabel dropLabel;
+    JFileChooser chooser;
 
     private Timer refreshTimer;
     private DecodeWorker currentWorker;
@@ -51,39 +56,39 @@ public class QmcDecode extends JFrame {
         }
     }
 
-    private void addFiles(List<String> files) {
-        for (String file : files) {
+    private void addFiles(List<File> files) {
+        for (File file : files) {
+            String filePath = file.getAbsolutePath();
             try {
-                var f = new File(file);
-                if (!f.exists() || !f.isFile()) {
-                    System.err.println(String.format("\"%s\" is not a file", file));
+                if (!file.exists() || !file.isFile()) {
+                    System.err.println(String.format("\"%s\" is not a file", filePath));
                     continue;
                 }
                 String inputName;
                 String inputExt;
                 {
-                    if (!file.contains(".")) {
-                        System.err.println(String.format("\"%s\" - no extension name found", file));
+                    if (!file.getName().contains(".")) {
+                        System.err.println(String.format("\"%s\" - no extension name found", filePath));
                         continue;
                     }
-                    var index = file.lastIndexOf(".");
-                    inputName = file.substring(0, index);
-                    inputExt = file.substring(index).toLowerCase();
+                    var index = filePath.lastIndexOf(".");
+                    inputName = filePath.substring(0, index);
+                    inputExt = filePath.substring(index).toLowerCase();
                 }
                 switch (inputExt) {
                     case ".qmc0":
                     case ".qmc3":
-                        addTask(file, inputName + ".mp3");
+                        addTask(filePath, inputName + ".mp3");
                         break;
                     case ".qmcogg":
-                        addTask(file, inputName + ".ogg");
+                        addTask(filePath, inputName + ".ogg");
                         break;
                     case ".qmcflac":
-                        addTask(file, inputName + ".flac");
+                        addTask(filePath, inputName + ".flac");
                         break;
                 }
             } catch (Exception ex) {
-                System.err.println(String.format("\"%s\" error: %s", file, ex.getMessage()));
+                System.err.println(String.format("\"%s\" error: %s", filePath, ex.getMessage()));
                 ex.printStackTrace();
             }
         }
@@ -106,6 +111,15 @@ public class QmcDecode extends JFrame {
         }
     }
 
+    public void chooseFile() {
+        var result = chooser.showOpenDialog(QmcDecode.this);
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+        var files = chooser.getSelectedFiles();
+        addFiles(Arrays.asList(files));
+    }
+
     public QmcDecode() {
         setContentPane(contentPane);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -113,10 +127,47 @@ public class QmcDecode extends JFrame {
 
         dropLabel.setDropTarget(new FileDropTarget() {
             @Override
-            public void onFileDrop(List<String> files) {
+            public void onFileDrop(List<File> files) {
                 addFiles(files);
             }
         });
+        dropLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                chooseFile();
+            }
+        });
+        chooser = new JFileChooser();
+        chooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                if (!f.isFile()) {
+                    return false;
+                }
+                var path = f.getName();
+                var index = path.lastIndexOf(".");
+                if (index == -1) {
+                    return false;
+                }
+                var ext = path.substring(index).toLowerCase();
+                switch (ext) {
+                    case ".qmc0":
+                    case ".qmc3":
+                    case ".qmcogg":
+                    case ".qmcflac":
+                        break;
+                    default:
+                        return false;
+                }
+                return true;
+            }
+
+            @Override
+            public String getDescription() {
+                return "QMC files";
+            }
+        });
+        chooser.setMultiSelectionEnabled(true);
     }
 
     public static void main(String[] args) {

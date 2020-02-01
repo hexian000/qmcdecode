@@ -15,19 +15,19 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public abstract class FileDropTarget extends DropTarget {
-    private static List<String> getFileDropWindows(Transferable transferable) throws IOException, UnsupportedFlavorException {
-        List<String> result = new ArrayList<>();
+    private static List<File> getFileDropWindows(Transferable transferable) throws IOException, UnsupportedFlavorException {
+        List<File> result = new ArrayList<>();
         List<?> data = (List<?>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
         for (Object o : data) {
             if (o instanceof File) {
-                result.add(((File) o).getAbsolutePath());
+                result.add((File) o);
             }
         }
         return Collections.unmodifiableList(result);
     }
 
-    private static List<String> getFileDropUnix(Transferable transferable) throws IOException, UnsupportedFlavorException, ClassNotFoundException {
-        List<String> result = new ArrayList<>();
+    private static List<File> getFileDropUnix(Transferable transferable) throws IOException, UnsupportedFlavorException, ClassNotFoundException {
+        List<File> result = new ArrayList<>();
         DataFlavor nixFileDataFlavor = new DataFlavor("text/uri-list;class=java.lang.String");
         String data = (String) transferable.getTransferData(nixFileDataFlavor);
         for (StringTokenizer st = new StringTokenizer(data, "\r\n"); st.hasMoreTokens(); ) {
@@ -37,8 +37,8 @@ public abstract class FileDropTarget extends DropTarget {
                 continue;
             }
             try {
-                File file = new File(new URI(token));
-                result.add(file.getAbsolutePath());
+                var file = new File(new URI(token));
+                result.add(file);
             } catch (Exception ignore) {
             }
         }
@@ -64,5 +64,5 @@ public abstract class FileDropTarget extends DropTarget {
         System.err.println("unsupported transferable");
     }
 
-    public abstract void onFileDrop(List<String> files);
+    public abstract void onFileDrop(List<File> files);
 }

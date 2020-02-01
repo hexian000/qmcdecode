@@ -20,7 +20,7 @@
         </constraints>
         <properties>
           <horizontalAlignment value="0"/>
-          <text value="Drag *.qmc0 *.qmc3 *.qmcogg *.qmcflac here"/>
+          <text value="&lt;html&gt;Drag and drop *.qmc0 *.qmc3 *.qmcogg *.qmcflac here&lt;br/&gt;&#10;Or click to choose file&lt;/html&gt;"/>
         </properties>
       </component>
       <component id="daae1" class="javax.swing.JList" binding="taskList">
