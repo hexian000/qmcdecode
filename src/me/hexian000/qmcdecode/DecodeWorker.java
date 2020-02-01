@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.CancellationException;
 
-public class DecodeWorker extends SwingWorker<String, Void> {
+public class DecodeWorker extends SwingWorker<Void, Void> {
     public String getInput() {
         return input;
     }
@@ -43,20 +43,22 @@ public class DecodeWorker extends SwingWorker<String, Void> {
     private void cleanup() {
         try {
             var outFile = new File(output);
-            //noinspection ResultOfMethodCallIgnored
-            outFile.delete();
+            if (outFile.isFile()) {
+                //noinspection ResultOfMethodCallIgnored
+                outFile.delete();
+            }
         } catch (Exception ignored) {
         }
     }
 
     @Override
-    protected String doInBackground() {
+    protected Void doInBackground() throws Exception {
         try {
             decode();
         } catch (Exception e) {
-            e.printStackTrace();
             cleanup();
+            throw e;
         }
-        return input;
+        return null;
     }
 }

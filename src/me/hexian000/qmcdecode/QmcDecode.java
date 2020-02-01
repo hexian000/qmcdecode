@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ExecutionException;
 
 public class QmcDecode extends JFrame {
     private JProgressBar decodeProgress;
@@ -105,6 +106,15 @@ public class QmcDecode extends JFrame {
         }
         decodeProgress.setValue(currentWorker.getProgress());
         if (currentWorker.isDone()) {
+            try {
+                currentWorker.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, ex.getCause().getLocalizedMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
             queue.remove(currentWorker);
             updateTaskList();
             nextWorker();
