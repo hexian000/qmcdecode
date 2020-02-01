@@ -32,4 +32,9 @@ public class QmcInputStream extends InputStream {
         }
         return data ^ key.next();
     }
+
+    @Override
+    public void close() throws IOException {
+        base.close();
+    }
 }
