@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class QmcInputStream extends InputStream {
-    private InputStream base;
-    private KeyGenerator key;
+    private final InputStream base;
+    private final KeyGenerator key;
 
     public QmcInputStream(InputStream base) {
         this.base = base;

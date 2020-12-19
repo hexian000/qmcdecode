@@ -12,8 +12,9 @@ public class DecodeWorker extends SwingWorker<Void, Void> {
         return input;
     }
 
-    private String input, output;
-    private long length;
+    private final String input;
+    private final String output;
+    private final long length;
 
     public DecodeWorker(String input, String output) {
         this.input = input;

@@ -16,11 +16,11 @@ public class QmcDecode extends JFrame {
     private JPanel contentPane;
     private JList<String> taskList;
     private JLabel dropLabel;
-    JFileChooser chooser;
+    final JFileChooser chooser;
 
     private Timer refreshTimer;
     private DecodeWorker currentWorker;
-    private Queue<DecodeWorker> queue = new LinkedList<>();
+    private final Queue<DecodeWorker> queue = new LinkedList<>();
 
     private void nextWorker() {
         currentWorker = queue.peek();
@@ -62,14 +62,14 @@ public class QmcDecode extends JFrame {
             String filePath = file.getAbsolutePath();
             try {
                 if (!file.exists() || !file.isFile()) {
-                    System.err.println(String.format("\"%s\" is not a file", filePath));
+                    System.err.printf("\"%s\" is not a file%n", filePath);
                     continue;
                 }
                 String inputName;
                 String inputExt;
                 {
                     if (!file.getName().contains(".")) {
-                        System.err.println(String.format("\"%s\" - no extension name found", filePath));
+                        System.err.printf("\"%s\" - no extension name found%n", filePath);
                         continue;
                     }
                     var index = filePath.lastIndexOf(".");
@@ -89,7 +89,7 @@ public class QmcDecode extends JFrame {
                         break;
                 }
             } catch (Exception ex) {
-                System.err.println(String.format("\"%s\" error: %s", filePath, ex.getMessage()));
+                System.err.printf("\"%s\" error: %s%n", filePath, ex.getMessage());
                 ex.printStackTrace();
             }
         }
